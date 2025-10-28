@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import {axiosInstance} from "../../lib/axiosInstance"
 import { useInView } from 'react-intersection-observer'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,8 +14,9 @@ import {
 import { Card, CardContent, CardHeader } from '../ui/card'
 import { Input } from '../ui/input'
 import { Button } from '../ui/Button'
+import { useRouter } from 'next/navigation'
 const contactSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  // name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(5, 'Password must be at least 5 characters'),
 })
@@ -22,6 +24,7 @@ const contactSchema = z.object({
 type AdminFormData = z.infer<typeof contactSchema>
 
 export default function LoginAdmin() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [ref, inView] = useInView({
@@ -38,31 +41,30 @@ export default function LoginAdmin() {
     resolver: zodResolver(contactSchema)
   })
 
-  const onSubmit = async (data: AdminFormData) => {
-    setIsSubmitting(true)
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
 
-      if (response.ok) {
-        setSubmitStatus('success')
-        reset()
+
+ const onSubmit = async (data: AdminFormData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axiosInstance.post("/admin/login", data);
+      console.log("thisis axios", axiosInstance)
+      if (response.status === 200) {
+        setSubmitStatus("success");
+        reset();
+         setTimeout(() => {
+          router.push("/dashboard"); 
+        }, 1000);
       } else {
-        setSubmitStatus('error')
+        setSubmitStatus("error");
       }
     } catch (error) {
-      setSubmitStatus('error')
+      console.error("❌ Error during registration:", error);
+      setSubmitStatus("error");
     } finally {
-      setIsSubmitting(false)
-      // Reset status after 3 seconds
-      setTimeout(() => setSubmitStatus('idle'), 3000)
+      setIsSubmitting(false);
+      setTimeout(() => setSubmitStatus("idle"), 3000);
     }
-  }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -106,7 +108,7 @@ export default function LoginAdmin() {
                 <CardContent className="p-0">
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid gap-4">
-                      <div>
+                      {/* <div>
                         <Input
                           {...register('name')}
                           placeholder="Your Name"
@@ -115,7 +117,7 @@ export default function LoginAdmin() {
                         {errors.name && (
                           <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
                         )}
-                      </div>
+                      </div> */}
                       <div>
                         <Input
                           {...register('email')}
