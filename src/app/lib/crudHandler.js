@@ -7,7 +7,7 @@ import { connectMongo } from "./mongodb";
  */
 export function createCRUDHandlers(Model) {
   return {
-    // ✅ Create document
+    //  Create document
     async POST(req) {
       await connectMongo();
       const data = await req.json();
@@ -16,14 +16,14 @@ export function createCRUDHandlers(Model) {
       return NextResponse.json(item, { status: 201 });
     },
 
-    // ✅ Get all documents
+    //  Get all documents
     async GET() {
       await connectMongo();
       const items = await Model.find();
       return NextResponse.json(items, { status: 200 });
     },
 
-    // ✅ Update document by ID
+    //  Update document by ID
     async PUT(req, { params }) {
       await connectMongo();
       const data = await req.json();
@@ -31,7 +31,7 @@ export function createCRUDHandlers(Model) {
       return NextResponse.json(updated, { status: 200 });
     },
 
-    // ✅ Delete document by ID
+    //  Delete document by ID
     async DELETE(_, { params }) {
       await connectMongo();
       await Model.findByIdAndDelete(params.id);
