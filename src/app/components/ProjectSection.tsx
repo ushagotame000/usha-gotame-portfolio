@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { useInView } from 'react-intersection-observer'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import {
   ExternalLink,
   Github,
@@ -12,124 +12,69 @@ import {
   Zap,
   Users,
   ShoppingCart,
-} from 'lucide-react'
-import { Button } from './ui/Button'
-import { Card, CardContent, CardHeader } from './ui/card'
-import { Badge } from './ui/badge'
+} from "lucide-react";
+import { Button } from "./ui/Button";
+import { Card, CardContent, CardHeader } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { projectService } from "@/services/projectService";
 
-const projectCategories = ['All', 'Web App', 'E-commerce', 'Portfolio', 'Tool']
+const projectCategories = [
+  "All",
+  "Web App",
+  "E-commerce",
+  "Portfolio",
+  "Tool",
+  "Mobile App",
+];
 
-const projects = [
-  {
-    id: 1,
-    title: 'E-Commerce Platform',
-    category: 'E-commerce',
-    description: 'A modern e-commerce platform with advanced filtering, cart management, and payment integration. Built with Next.js and Stripe.',
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop',
-    technologies: ['Next.js', 'TypeScript', 'Stripe', 'Tailwind CSS', 'Prisma'],
-    features: ['Payment Integration', 'Admin Dashboard', 'Real-time Inventory', 'Mobile Responsive'],
-    github: '#',
-    live: '#',
-    icon: ShoppingCart,
-    color: 'from-emerald-500 to-teal-500'
-  },
-  {
-    id: 2,
-    title: 'Task Management App',
-    category: 'Web App',
-    description: 'A collaborative task management application with real-time updates, team collaboration, and advanced project tracking.',
-    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop',
-    technologies: ['React', 'Node.js', 'Socket.io', 'MongoDB', 'Material-UI'],
-    features: ['Real-time Collaboration', 'Drag & Drop', 'Time Tracking', 'Team Analytics'],
-    github: '#',
-    live: '#',
-    icon: Users,
-    color: 'from-blue-500 to-indigo-500'
-  },
-  {
-    id: 3,
-    title: 'Developer Portfolio',
-    category: 'Portfolio',
-    description: 'A stunning portfolio website with smooth animations, interactive elements, and a modern design aesthetic.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop',
-    technologies: ['Next.js', 'Framer Motion', 'Tailwind CSS', 'TypeScript'],
-    features: ['Smooth Animations', 'Dark Mode', 'Contact Form', 'SEO Optimized'],
-    github: '#',
-    live: '#',
-    icon: Sparkles,
-    color: 'from-purple-500 to-pink-500'
-  },
-  {
-    id: 4,
-    title: 'Performance Analytics Tool',
-    category: 'Tool',
-    description: 'A comprehensive web performance monitoring tool with real-time metrics, detailed reports, and optimization suggestions.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
-    technologies: ['React', 'D3.js', 'Express', 'PostgreSQL', 'WebAPIs'],
-    features: ['Real-time Monitoring', 'Custom Dashboards', 'Alert System', 'Performance Insights'],
-    github: '#',
-    live: '#',
-    icon: Zap,
-    color: 'from-yellow-500 to-orange-500'
-  },
-  {
-    id: 5,
-    title: 'Social Media Dashboard',
-    category: 'Web App',
-    description: 'A unified dashboard for managing multiple social media accounts with scheduling, analytics, and engagement tracking.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
-    technologies: ['Vue.js', 'Nuxt.js', 'Chart.js', 'Firebase', 'Vuetify'],
-    features: ['Multi-platform Support', 'Post Scheduling', 'Analytics Dashboard', 'Team Collaboration'],
-    github: '#',
-    live: '#',
-    icon: Users,
-    color: 'from-rose-500 to-pink-500'
-  },
-  {
-    id: 6,
-    title: 'Creative Agency Site',
-    category: 'Portfolio',
-    description: 'A visually stunning website for a creative agency with portfolio showcase, team profiles, and client testimonials.',
-    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600&h=400&fit=crop',
-    technologies: ['Gatsby', 'GraphQL', 'Contentful', 'GSAP', 'Styled Components'],
-    features: ['CMS Integration', 'Advanced Animations', 'Gallery Showcase', 'Contact Forms'],
-    github: '#',
-    live: '#',
-    icon: Sparkles,
-    color: 'from-indigo-500 to-purple-500'
-  }
-]
+// Map API category to icons and gradient colors
+const categoryMap: Record<string, { icon: any; color: string }> = {
+  "Web App": { icon: Users, color: "from-blue-500 to-indigo-500" },
+  "E-commerce": { icon: ShoppingCart, color: "from-emerald-500 to-teal-500" },
+  Portfolio: { icon: Sparkles, color: "from-purple-500 to-pink-500" },
+  Tool: { icon: Zap, color: "from-yellow-500 to-orange-500" },
+  "Mobile App": { icon: Users, color: "from-rose-500 to-pink-500" },
+};
 
 export default function ProjectsSection() {
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.1
-  })
+    threshold: 0.1,
+  });
 
-  const filteredProjects = selectedCategory === 'All'
-    ? projects
-    : projects.filter(project => project.category === selectedCategory)
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await projectService.getAll();
+        setProjects(response.data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const filteredProjects =
+    selectedCategory === "All"
+      ? projects
+      : projects.filter((project) => project.category === selectedCategory);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+      transition: { staggerChildren: 0.1 },
+    },
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
 
   return (
     <section id="projects" className="py-20" ref={ref}>
@@ -152,7 +97,10 @@ export default function ProjectsSection() {
           </motion.div>
 
           {/* Category Filter */}
-          <motion.div variants={itemVariants} className="flex justify-center mb-12">
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-center mb-12"
+          >
             <div className="flex flex-wrap gap-2 p-2 bg-muted/50 rounded-lg border border-border/50 backdrop-blur-sm">
               <Filter className="w-5 h-5 text-muted-foreground self-center mr-2" />
               {projectCategories.map((category) => (
@@ -163,8 +111,8 @@ export default function ProjectsSection() {
                   onClick={() => setSelectedCategory(category)}
                   className={`transition-all duration-300 ${
                     selectedCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-primary/10'
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-primary/10"
                   }`}
                 >
                   {category}
@@ -178,128 +126,158 @@ export default function ProjectsSection() {
             variants={containerVariants}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                variants={itemVariants}
-                layout
-                whileHover={{
-                  y: -10,
-                  transition: { duration: 0.3 }
-                }}
-                onHoverStart={() => setHoveredProject(project.id)}
-                onHoverEnd={() => setHoveredProject(null)}
-                className="group cursor-pointer"
-              >
-                <Card className="h-full overflow-hidden bg-background/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
-                  {/* Project Image */}
-                  <div className="relative overflow-hidden h-48">
-                    <motion.img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      whileHover={{ scale: 1.1 }}
-                    />
+            {filteredProjects.map((project, index) => {
+              const { icon: ProjectIcon, color } = categoryMap[
+                project.category
+              ] || { icon: Sparkles, color: "from-gray-500 to-gray-700" };
 
-                    {/* Overlay */}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: hoveredProject === project.id ? 1 : 0 }}
-                      className="absolute inset-0 bg-black/60 flex items-center justify-center"
-                    >
-                      <div className="flex space-x-4">
-                        <motion.a
-                          href={project.live}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-primary/80 transition-colors"
-                        >
-                          <ExternalLink className="w-5 h-5 text-white" />
-                        </motion.a>
-                        <motion.a
-                          href={project.github}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-primary/80 transition-colors"
-                        >
-                          <Github className="w-5 h-5 text-white" />
-                        </motion.a>
-                      </div>
-                    </motion.div>
+              return (
+                <motion.div
+                  key={project._id}
+                  variants={itemVariants}
+                  layout
+                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                  onHoverStart={() => setHoveredProject(index)}
+                  onHoverEnd={() => setHoveredProject(null)}
+                  className="group cursor-pointer"
+                >
+                  <Card className="h-full overflow-hidden bg-background/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
+                    {/* Project Image */}
+                    <div className="relative overflow-hidden h-48">
+                      <motion.img
+                        src={project.imageUrl}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        whileHover={{ scale: 1.1 }}
+                      />
 
-                    {/* Project Icon */}
-                    <div className={`absolute top-4 right-4 w-12 h-12 bg-gradient-to-br ${project.color} rounded-xl flex items-center justify-center shadow-lg`}>
-                      <project.icon className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {project.category}
-                      </Badge>
-                      <div className="flex space-x-2">
-                        <Button variant="ghost" size="sm" className="w-8 h-8 p-0">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                  </CardHeader>
-
-                  <CardContent className="pt-0">
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
-                      {project.description}
-                    </p>
-
-                    {/* Technologies */}
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <Badge key={tech} variant="outline" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                      {project.technologies.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{project.technologies.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Features */}
-                    <div className="space-y-1">
-                      {project.features.slice(0, 2).map((feature) => (
-                        <div key={feature} className="flex items-center text-sm text-muted-foreground">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2" />
-                          {feature}
+                      {/* Overlay */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: hoveredProject === index ? 1 : 0 }}
+                        className="absolute inset-0 bg-black/60 flex items-center justify-center"
+                      >
+                        <div className="flex space-x-4">
+                          {/* Overlay Buttons */}
+                          {project.liveLink && (
+                            <motion.a
+                              href={project.liveLink}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-primary/80 transition-colors"
+                            >
+                              <ExternalLink className="w-5 h-5 text-white" />
+                            </motion.a>
+                          )}
+                          {project.codeLink && (
+                            <motion.a
+                              href={project.codeLink}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-primary/80 transition-colors"
+                            >
+                              <Github className="w-5 h-5 text-white" />
+                            </motion.a>
+                          )}
                         </div>
-                      ))}
+                      </motion.div>
+
+                      {/* Project Icon */}
+                      <div
+                        className={`absolute top-4 right-4 w-12 h-12 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center shadow-lg`}
+                      >
+                        <ProjectIcon className="w-6 h-6 text-white" />
+                      </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex space-x-2 mt-6">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Github className="w-4 h-4 mr-2" />
-                        Code
-                      </Button>
-                      <Button size="sm" className="flex-1">
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Live
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {project.category}
+                        </Badge>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-8 h-8 p-0"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h3>
+                    </CardHeader>
+
+                    <CardContent className="pt-0">
+                      <p className="text-muted-foreground mb-4 line-clamp-3">
+                        {project.description}
+                      </p>
+
+                      {/* Technologies */}
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {project.technologies
+                          .slice(0, 3)
+                          .map((tech: string) => (
+                            <Badge
+                              key={tech}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        {project.technologies.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{project.technologies.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Features */}
+                      <div className="space-y-1">
+                        {project.features.slice(0, 2).map((feature: string) => (
+                          <div
+                            key={feature}
+                            className="flex items-center text-sm text-muted-foreground"
+                          >
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2" />
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex space-x-2 mt-6">
+                        {project.codeLink && (
+                          <a
+                            href={project.codeLink}
+                            className="flex-1 inline-flex items-center justify-center border border-input text-xs bg-background shadow-sm dark:text-white hover:bg-accent hover:text-accent-foreground px-4 font-medium transition-all duration-300 hover:scale-105 rounded-md"
+                          >
+                            <Github className="w-4 h-4 mr-2" />
+                            Code
+                          </a>
+                        )}
+                        {project.liveLink && (
+                          <a
+                            href={project.liveLink}
+                            className="flex-1 inline-flex items-center justify-center border border-primary text-white bg-primary hover:bg-primary/90 py-2 rounded-md px-4 text-xs font-medium transition-all duration-300 hover:scale-105"
+                          >
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Live
+                          </a>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           {/* View More Button */}
-          <motion.div
-            variants={itemVariants}
-            className="text-center mt-16"
-          >
+          <motion.div variants={itemVariants} className="text-center mt-16">
             <Button
               variant="outline"
               size="lg"
@@ -312,5 +290,5 @@ export default function ProjectsSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

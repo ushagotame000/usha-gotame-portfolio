@@ -26,8 +26,13 @@ import { Card, CardContent, CardHeader } from './ui/card'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  subject: z.string().min(5, 'Subject must be at least 5 characters'),
+email: z
+  .string()
+  .email("Please enter a valid email address")
+  .refine((val) => !val.endsWith("@tempmail.com"), {
+    message: "Disposable emails are not allowed",
+  }),
+    subject: z.string().min(5, 'Subject must be at least 5 characters'),
   message: z.string().min(10, 'Message must be at least 10 characters'),
 })
 
@@ -251,7 +256,7 @@ export default function ContactSection() {
 
                 <CardContent className="p-0">
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <div>
                         <Input
                           {...register('name')}

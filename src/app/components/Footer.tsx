@@ -138,8 +138,8 @@ const handleAdmin=()=>{
                 © {currentYear} Frontend Developer. All rights reserved.
               </div>
 
-                  <button onClick={handleAdmin} className='bg-green-500 p-3 rounded-xl shadow-lg'>Admin</button>
- {openAdmin && <LoginAdmin />}
+           <button onClick={handleAdmin} className='bg-green-500 p-3 rounded-xl shadow-lg'>Admin</button>
+              {openAdmin && <LoginAdmin />}
               {/* Social Icons */}
               <div className="flex items-center space-x-4">
                 {socialLinks.map((social, index) => (

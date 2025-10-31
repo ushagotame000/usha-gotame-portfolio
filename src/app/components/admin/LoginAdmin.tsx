@@ -43,28 +43,65 @@ export default function LoginAdmin() {
 
 
 
- const onSubmit = async (data: AdminFormData) => {
-    setIsSubmitting(true);
-    try {
-      const response = await axiosInstance.post("/admin/login", data);
-      console.log("thisis axios", axiosInstance)
-      if (response.status === 200) {
-        setSubmitStatus("success");
-        reset();
-         setTimeout(() => {
-          router.push("/dashboard"); 
+//  const onSubmit = async (data: AdminFormData) => {
+//     setIsSubmitting(true);
+//     try {
+//       const response = await axiosInstance.post("/admin/login", data);
+//       console.log("thisis axios", axiosInstance)
+//       if (response.status === 200) {
+//         setSubmitStatus("success");
+//         reset();
+//          setTimeout(() => {
+//           router.push("/dashboard"); 
+//         }, 1000);
+//       } else {
+//         setSubmitStatus("error");
+//       }
+//     } catch (error) {
+//       console.error("❌ Error during registration:", error);
+//       setSubmitStatus("error");
+//     } finally {
+//       setIsSubmitting(false);
+//       setTimeout(() => setSubmitStatus("idle"), 3000);
+//     }
+//   };
+
+
+const onSubmit = async (data: AdminFormData) => {
+  setIsSubmitting(true);
+  try {
+    const response = await axiosInstance.post("/admin/login", data);
+    console.log("thisis axios", axiosInstance);
+    
+    if (response.status === 200) {
+      setSubmitStatus("success");
+      reset();
+
+      // Assuming the response contains a token
+      const token = response.data.token;
+      if (token) {
+        // Store the token in localStorage or cookies
+        localStorage.setItem("authToken", token);
+
+        // Redirect to the dashboard after 1 second
+        setTimeout(() => {
+          router.push("/dashboard");
         }, 1000);
       } else {
         setSubmitStatus("error");
       }
-    } catch (error) {
-      console.error("❌ Error during registration:", error);
+    } else {
       setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
-      setTimeout(() => setSubmitStatus("idle"), 3000);
     }
-  };
+  } catch (error) {
+    console.error("❌ Error during registration:", error);
+    setSubmitStatus("error");
+  } finally {
+    setIsSubmitting(false);
+    setTimeout(() => setSubmitStatus("idle"), 3000);
+  }
+};
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
