@@ -17,7 +17,8 @@ import {
   Twitter,
   Clock,
   Globe,
-  MessageSquare
+  MessageSquare,
+  LinkedinIcon
 } from 'lucide-react'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
@@ -47,10 +48,10 @@ const contactInfo = [
     color: 'from-blue-500 to-cyan-500'
   },
   {
-    icon: Phone,
-    label: 'Phone',
-    value: '+977 9823123435',
-    href: 'tel:+15551234567',
+    icon: LinkedinIcon,
+    label: 'LinkedIn',
+    value: ' ',
+    href: 'https://www.linkedin.com/in/usha-gotame-developer/',
     color: 'from-green-500 to-emerald-500'
   },
   {
@@ -79,14 +80,14 @@ const socialLinks = [
   {
     icon: Linkedin,
     label: 'LinkedIn',
-    href: 'www.linkedin.com/in/usha-gotame-frontend-developer',
+    href: 'https://www.linkedin.com/in/usha-gotame-developer/',
     color: 'hover:bg-blue-600'
   },
   
   {
     icon: Globe,
     label: 'Website',
-    href: '#',
+    href: 'https://usha-gotame-portfolio.vercel.app/',
     color: 'hover:bg-indigo-600'
   }
 ]

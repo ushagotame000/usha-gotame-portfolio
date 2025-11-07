@@ -123,7 +123,7 @@ const onSubmit = async (data: AdminFormData) => {
   }
 
   return (
-    <section id="contact" className="py-20" ref={ref}>
+    <section id="contact" className="pb-5 pt-10" ref={ref}>
       <div className="container mx-auto px-4">
         <motion.div
           variants={containerVariants}
@@ -132,7 +132,7 @@ const onSubmit = async (data: AdminFormData) => {
           className="max-w-6xl mx-auto"
         >
          
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid gap-12 items-start">
           
 
             {/* Contact Form */}

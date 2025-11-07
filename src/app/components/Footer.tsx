@@ -3,15 +3,13 @@
 import { motion } from 'framer-motion'
 import { Heart, Github, Linkedin, Twitter, Mail, ArrowUp } from 'lucide-react'
 import { Button } from './ui/Button'
-import { useState } from 'react'
-import LoginAdmin from './admin/LoginAdmin'
 
 
 const socialLinks = [
-  { icon: Github, href: 'https://github.com', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+  { icon: Github, href: 'https://github.com/ushagotame000', label: 'GitHub' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/in/usha-gotame-developer/', label: 'LinkedIn' },
   { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
-  { icon: Mail, href: 'mailto:alex@example.com', label: 'Email' },
+  { icon: Mail, href: 'mailto:ushagotame000@gmail.com', label: 'Email' },
 ]
 
 const quickLinks = [
@@ -25,7 +23,6 @@ const quickLinks = [
 
 
 export default function Footer() {
-  const [openAdmin, setOpenAdmin]= useState(false);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -40,9 +37,7 @@ export default function Footer() {
 
   const currentYear = new Date().getFullYear()
   
-const handleAdmin=()=>{
- setOpenAdmin(true); 
-}
+
   return (
     <footer className="bg-muted/30 border-t border-border/50">
       <div className="container mx-auto px-4 py-16">
@@ -138,8 +133,6 @@ const handleAdmin=()=>{
                 © {currentYear} Frontend Developer. All rights reserved.
               </div>
 
-           <button onClick={handleAdmin} className='bg-green-500 p-3 rounded-xl shadow-lg'>Admin</button>
-              {openAdmin && <LoginAdmin />}
               {/* Social Icons */}
               <div className="flex items-center space-x-4">
                 {socialLinks.map((social, index) => (

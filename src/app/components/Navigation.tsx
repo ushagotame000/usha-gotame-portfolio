@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Home, User, Briefcase, Mail, Code, UserLock } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { Button } from './ui/Button'
+import LoginAdmin from './admin/LoginAdmin'
 
 const navItems = [
   { id: 'hero', label: 'Home', icon: Home },
@@ -19,6 +20,7 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
   const [scrolled, setScrolled] = useState(false)
+    const [openAdmin, setOpenAdmin] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,6 +55,10 @@ export default function Navigation() {
     setIsOpen(false)
   }
 
+    const handleAdmin = () => {
+    setOpenAdmin(true) 
+    console.log("admin clicked")
+  }
   return (
     <>
       {/* Desktop Navigation */}
@@ -89,11 +95,15 @@ export default function Navigation() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => scrollToSection(item.id)}
+                    onClick={() => {
+                      if (item.id === 'admin') {
+                        handleAdmin() 
+                      } else {
+                        scrollToSection(item.id)
+                      }
+                    }}
                     className={`relative transition-all duration-300 ${
-                      activeSection === item.id
-                        ? 'text-primary font-medium'
-                        : 'text-muted-foreground hover:text-foreground'
+                      activeSection === item.id ? 'text-primary font-medium' : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
@@ -180,6 +190,25 @@ export default function Navigation() {
           />
         )}
       </AnimatePresence>
+{openAdmin && (
+  <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+    <div className="relative bg-white rounded-lg shadow-lg">
+      {/* Close button */}
+      <button
+        onClick={() => setOpenAdmin(false)}
+        className="absolute top-4 right-4 text-purple-500 hover:text-purple-700 text-2xl "
+      >
+        X
+      </button>
+
+      {/* LoginAdmin content centered */}
+      <div className="flex justify-center items-center w-full pt-2">
+        <LoginAdmin />
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   )
 }
