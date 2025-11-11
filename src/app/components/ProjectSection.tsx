@@ -278,14 +278,20 @@ export default function ProjectsSection() {
 
           {/* View More Button */}
           <motion.div variants={itemVariants} className="text-center mt-16">
-            <Button
-              variant="outline"
-              size="lg"
-              className="group border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-medium transition-all duration-300 hover:scale-105"
+            <a
+              href="https://github.com/ushagotame000/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Github className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-              View All Projects on GitHub
-            </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="group border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-medium transition-all duration-300 hover:scale-105"
+              >
+                <Github className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                View All Projects on GitHub
+              </Button>
+            </a>
           </motion.div>
         </motion.div>
       </div>

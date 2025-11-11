@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Admin from "../../../../models/Admin";
 import { connectMongo } from "../../../lib/mongodb";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function POST(req) {
   try {
@@ -18,7 +19,7 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Compare the entered password with the hashed one
+    //  Compare the entered password with the hashed one
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return NextResponse.json(
@@ -27,17 +28,21 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Successful login
+    //  Successful login
+    const token = jwt.sign(
+      { id: admin._id, email: admin.email, name: admin.name },
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    // Send the token in the response
     return NextResponse.json({
       success: true,
       message: "Login successful",
-    //   admin: {
-    //     name: admin.name,
-    //     email: admin.email,
-    //   },
+      token, 
     });
   } catch (error) {
-    console.error(" Login Error:", error);
+    console.error("Login Error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

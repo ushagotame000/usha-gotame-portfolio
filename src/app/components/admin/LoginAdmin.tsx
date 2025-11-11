@@ -72,6 +72,7 @@ const onSubmit = async (data: AdminFormData) => {
   try {
     const response = await axiosInstance.post("/admin/login", data);
     console.log("thisis axios", axiosInstance);
+    console.log(response,"response")
     
     if (response.status === 200) {
       setSubmitStatus("success");
@@ -94,7 +95,7 @@ const onSubmit = async (data: AdminFormData) => {
       setSubmitStatus("error");
     }
   } catch (error) {
-    console.error("❌ Error during registration:", error);
+    console.error("❌ Error during login:", error);
     setSubmitStatus("error");
   } finally {
     setIsSubmitting(false);
