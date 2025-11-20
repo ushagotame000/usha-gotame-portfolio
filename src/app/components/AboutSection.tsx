@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import Image from 'next/image';
 import {
   Code2,
   Palette,
@@ -102,9 +103,9 @@ const skills = [
 ];
 
 const stats = [
-  { number: "3+", label: "Years Experience" },
-  { number: "50+", label: "Projects Completed" },
-  { number: "15+", label: "Happy Clients" },
+  { number: "2+", label: "Years Experience" },
+  { number: "15+", label: "Projects Completed" },
+  { number: "1O+", label: "Happy Clients" },
   { number: "100%", label: "Code Quality" },
 ];
 
@@ -216,7 +217,15 @@ export default function AboutSection() {
                       className="relative z-10"
                     >
                       <div className="w-64 h-64 mx-auto bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center">
-                        <div className="text-8xl">👩‍💻</div>
+                        <div className="">
+                          <Image
+                            src="/images/Profile.png"
+                            alt="Profile"
+                            width={200}
+                            height={200}
+                            className="rounded-xl"
+                          />{" "}
+                        </div>
                       </div>
                     </motion.div>
 
